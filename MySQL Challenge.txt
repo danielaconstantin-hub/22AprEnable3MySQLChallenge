@@ -1,0 +1,266 @@
+USE sakila;
+DESCRIBE sakila;
+SHOW TABLES;
+
+1. List all actors.
+SELECT* FROM actor;
+
+2. Find the surname of the actor with the forename 'John'.
+SELECT last_name FROM actor WHERE first_name = 'John';
+
+3. Find all actors with surname 'Neeson'.
+SELECT* FROM actor WHERE last_name = 'Neeson';
+
+4. Find all actors with ID numbers divisible by 10.
+SELECT* FROM actor WHERE actor_id LIKE '%0';
+
+
+5. What is the description of the movie with an ID of 100?
+SELECT description FROM film_text WHERE film_id = 100;
+
+6. Find every R-rated movie.
+SELECT title FROM film WHERE rating = 'r';
+
+7. Find every non-R-rated movie.
+SELECT title FROM film WHERE rating != 'r';
+
+8. Find the ten shortest movies.
+SELECT title, length FROM film ORDER BY length, ASC LIMIT 10;
+
+9. Find the movies with the longest runtime, without using LIMIT.
+SELECT title, MAX(length) FROM film;
+
+10. Find all movies that have deleted scenes.
+SELECT title FROM film WHERE special_features = 'Deleted Scenes';
+
+11. Using HAVING, reverse-alphabetically list the last names that are not repeated.
+
+SELECT last_name FROM actor WHERE......
+
+12. Using HAVING, list the last names that appear more than once, from highest to lowest frequency.
+
+......
+
+13. Which actor has appeared in the most films?
+
+SELECT actor_info.first_name, actor_info.last_name
+FROM actor_info
+Join film_actor
+ON actor_info.actor_id=film_actor.actor_id
+GROUP BY actor_info.actor_id
+ORDER BY COUNT(*) DESC
+LIMIT 1;
+
+14. 'Academy Dinosaur' has been rented out, when is it due to be returned?
+
+SELECT title FROM film WHERE title = 'Academy Dinosaur'
+SELECT rental_date FROM rental
+..............................
+
+15. What is the average runtime of all films?
+
+SELECT AVG(length) FROM FILM;
+
+16. List the average runtime for every film category.
+SELECT category.name, AVG(film.length)
+FROM category
+JOIN film_category ON film_category.category_id=category.category_id
+Join film ON film.film_id=film_category.film_id
+GROUP BY category.category_id;
+
+17. List all movies featuring a robot.
+SELECT* FROM film 
+............
+
+18. How many movies were released in 2010?
+
+SELECT COUNT(title) FROM film WHERE release_year = 2010;
+
+19. Find the titles of all the horror movies.
+
+SELECT title FROM film
+JOIN film_category ON film_category.film_id=film.film_id
+JOIN category ON category.category_id=film_category.category_id
+WHERE category.name = 'Horror';
+
+20. List the full name of the staff member with the ID of 2.
+
+SELECT first_name, last_name,staff_id FROM staff WHERE staff_id = 2;
+
+21. List all the movies that Fred Costner has appeared in.
+
+SELECT title FROM film
+JOIN film_actor ON film_actor.film_id=film.film_id
+JOIN actor ON actor.actor_id=film_actor.actor_id
+WHERE first_name='fred' AND last_name='costner';
+
+22. How many distinct countries are there?
+
+
+CREATE VIEW special_country AS SELECT DISTINCT(country) FROM country;
+SELECT COUNT(*) FROM special_country;
+CREATE VIEW special_country AS SELECT DISTINCT(country) FROM country;
+SELECT COUNT(*) FROM special_country;
+
+
+23. List the name of every language in reverse-alphabetical order.
+
+SELECT name FROM language ORDER BY name DESC;
+
+24. List the full names of every actor whose surname ends with '-son' in alphabetical order by their forename.
+
+SELECT first_name, last_name FROM actor WHERE last_name LIKE '%son'ORDER BY first_name ASC;
+
+25. Which category contains the most films?
+
+SELECT category.name, COUNT(name)
+FROM category
+JOIN film_category ON film_category.category_id=category.category_id
+Join film ON film.film_id=film_category.film_id
+GROUP BY category.category_id
+ORDER BY COUNT(name) desc LIMIT 1
+;
+
+World Challenge SQL
+
+USE world;
+SHOW TABLES;
+
+1. Using COUNT , get the number of cities in the USA.
+
+SELECT COUNT(name) FROM city WHERE countrycode = 'USA';
+
+2. Find out the population and life expectancy for people in Argentina.
+
+SELECT Population, LifeExpectancy FROM country WHERE name = 'Argentina';
+
+
+3. Using IS NOT NULL , ORDER BY , and LIMIT , which country has the highest life expectancy?
+
+SELECT name, LifeExpectancy FROM country WHERE LifeExpectancy IS NOT NULL ORDER BY LifeExpectancy DESC LIMIT 1;
+
+
+4. Using JOIN ... ON , find the capital city of Spain.
+
+
+SELECT city.name FROM city JOIN country ON city.CountryCode = country.Code WHERE country.name = 'Spain' ORDER BY capital LIMIT 1;
+
+
+
+5. Using JOIN ... ON , list all the languages spoken in the Southeast Asia region.
+
+SELECT countrylanguage.Language FROM countrylanguage
+JOIN country ON country.code=countrylanguage.countrycode
+WHERE region = 'southeast asia';
+
+6. Using a single query, list 25 cities around the world that start with the letter F.
+
+SELECT name FROM city WHERE name LIKE 'F%' ORDER BY name LIMIT 25;
+
+
+7. Using COUNT and JOIN ... ON , get the number of cities in China.
+
+SELECT COUNT(city.name) FROM city JOIN country ON countryCode = city.countryCode WHERE country.name = 'china';
+
+
+8. Using IS NOT NULL , ORDER BY , and LIMIT , which country has the lowest population? Discard non-zero populations.
+
+SELECT name FROM country WHERE population IS NOT NULL ORDER BY population ASC LIMIT 1;
+
+9. Using aggregate functions, return the number of countries the database contains.
+
+SELECT COUNT(code) FROM country;
+
+10. What are the top ten largest countries by area?
+
+SELECT name FROM country ORDER BY surfacearea desc LIMIT 10;
+
+11. List the five largest cities by population in Japan.
+
+SELECT city.name FROM city
+JOIN country ON country.code=city.countrycode
+WHERE country.name='Japan' ORDER BY city.population desc LIMIT 5;
+
+12. List the names and country codes of every country with Elizabeth II as its Head of State. You will need to fix the mistake first!
+
+SELECT HeadOfState FROM country;
+
+UPDATE country
+SET headofstate = 'Elizabeth II'
+Where headofstate = 'Elisabeth II';
+
+SELECT name,code FROM country WHERE headofstate = 'Elizabeth II';
+
+
+13. List the top ten countries with the smallest population-to-area ratio. Discard any countries with a ratio of 0.
+
+SELECT name, surfacearea/population AS surf_pop FROM country ORDER BY surf_pop DESC LIMIT 10;
+
+14. List every unique world language.
+SELECT DISTINCT language FROM countrylanguage;
+
+15. List the names and GNP of the world's top 10 richest countries.
+SELECT name, GNP FROM country ORDER BY GNP DESC LIMIT 10;
+
+16. List the names of, and number of languages spoken by, the top ten most multilingual countries.
+
+SELECT country.name, COUNT(countrylanguage.language) FROM country
+JOIN countrylanguage ON countrylanguage.countrycode=country.code
+GROUP BY country.code
+ORDER BY COUNT(countrylanguage.language) desc LIMIT 10;
+
+17. List every country where over 50% of its population can speak German.
+
+SELECT country.name FROM country
+JOIN countrylanguage ON countrylanguage.countrycode=country.code
+WHERE countrylanguage.language = 'German' AND Percentage > 50;
+
+18. Which country has the worst life expectancy? Discard zero or null values.
+
+SELECT name, LifeExpectancy FROM country WHERE LifeExpectancy IS NOT NULL ORDER BY LifeExpectancy ASC LIMIT 1;
+
+19. List the top three most common government forms.
+SELECT* GovernmentForm COUNT(GovernmentForm) FROM country GROUP BY GovernmentForm ORDER BY COUNT(code) DESC LIMIT 3 ;
+
+SELECT governmentform, COUNT(governmentform) FROM country
+GROUP BY governmentform ORDER BY COUNT(code) desc LIMIT 3;
+
+20. How many countries have gained independence since records began?
+
+SELECT COUNT(country) ORDER BY IndepYear WHERE IndepYear
+
+
+Movielens Challenge SQL
+
+1. List the titles and release dates of movies released between 1983-1993 in reverse chronological order.
+
+SELECT title FROM movies WHERE release_date BETWEEN '1983-01-01' AND '1993-01-01' ORDER BY release_date DESC;
+
+2. Without using LIMIT , list the titles of the movies with the lowest average rating.
+
+SELECT title, AVG(ratings.rating) FROM movies
+JOIN ratings ON ratings.id=movies.id
+WHERE rating = 1 GROUP BY title;
+
+3. List the unique records for Sci-Fi movies where male 24-year-old students have given 5-star ratings.
+
+SELECT genres.name, COUNT(movies.id) FROM genres
+JOIN genres_movies ON genres_movies.genre_id=genres.id
+JOIN movies ON movies.id=genres_movies.movie_id
+GROUP BY genres.name ORDER BY COUNT(movies.id) ASC;
+
+4. List the unique titles of each of the movies released on the most popular release day.
+
+
+5. Find the total number of movies in each genre; list the results in ascending numeric order
+
+SELECT COUNT(title) FROM movies ASC;
+
+
+
+
+
+
+
+
+
